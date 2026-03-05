@@ -1,3 +1,4 @@
+import Jwt  from "jsonwebtoken";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { connectDB } from "@/lib/db";
@@ -23,15 +24,30 @@ try{
             {status:401}
         );
     }
-
-    return NextResponse.json({
+    //JWT generation
+    const token = Jwt.sign(
+        {userId: user._id, role: user.role},
+        process.env.JWT_SECRET!,
+        {expiresIn: "7d"}
+    );
+    
+    const res = NextResponse.json({
         message: "Login Successful",
-        user:{
-            id: user._id,
-            name: user.name,
-            role: user.role
-        }
+        user: {name:user.name, role:user.role}
     });
+
+    //set token in HTTP-only cookie
+    res.cookies.set({
+        name: "authToken",
+        value: token,
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        path: "/",
+        maxAge: 60 * 60 * 24 * 7 //7 days
+    });
+
+    return res;
 
 } catch(error){
     return NextResponse.json({message: "Server Error"}, {status:500});
