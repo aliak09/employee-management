@@ -1,6 +1,4 @@
 "use client"
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { AppSidebar } from "@/components/app-sidebar"
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -20,12 +18,8 @@ useEffect(()=>{
 
 if(loading) return <p>Loading...</p>
 return (
-    <SidebarProvider>
-      <AppSidebar />
       <main>
-        <SidebarTrigger />
         {children}
       </main>
-    </SidebarProvider>
   )
 }
