@@ -6,12 +6,15 @@ import { Label } from "@/components/ui/label"
 import {Card, CardContent, CardFooter, CardHeader, CardTitle} from "@/components/ui/card"
 import { useState } from 'react'
 import axios from 'axios'
+import { useRouter } from "next/navigation";
 
 export default function page() {
   
   const [email, setEmail]=useState('');
   const[password, setPassword]=useState('');
   
+  const router = useRouter();
+
   const handleSubmit = async (e:any) => {
     e.preventDefault();
     try{
@@ -20,7 +23,15 @@ export default function page() {
           email, 
           password
         });
+      
+      const data = response.data;
+      localStorage.setItem("token", data.token);
 
+      if(data.user.role === "admin"){
+        router.push("/admin/dashboard");
+      }else{
+        router.push("/employee/dashboard");
+      }
       console.log('Login Success:',response.data);
     } catch(error:any){
       console.log('Login Failed:', error.response?.data);
