@@ -1,4 +1,6 @@
 "use client"
+import Navbar from "@/components/Navbar";
+import Sidebar from "@/components/Sidebar";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -18,8 +20,14 @@ useEffect(()=>{
 
 if(loading) return <p>Loading...</p>
 return (
-      <main>
-        {children}
-      </main>
+        <div className= "flex">
+        <Sidebar/>  
+        <main className="flex-1">
+            <Navbar/>
+            <div className="p-10">
+                {children}
+            </div>
+        </main>
+        </div>
   )
 }
