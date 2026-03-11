@@ -43,15 +43,37 @@ export async function POST(req:NextRequest) {
         );
     }
     //employee creation
-    const {name, email, password, role} = await req.json();
+    const body = await req.json();
+    const {
+        name,
+        email,
+        password,
+        role,
+        employeeId,
+        dob,
+        gender,
+        maritalStatus,
+        designation,
+        department,
+        salary,
+        profileImage    
+    } = body;
 
     const hashedPassword = await bcrypt.hash(password, 10);
     
     const employeeDoc = await Employee.create({
         name,
-        email, 
-        password:hashedPassword,
-        role
+        email,
+        password: hashedPassword,
+        role,
+        employeeId,
+        dob,
+        gender,
+        maritalStatus,
+        designation,
+        department,
+        salary,
+        profileImage
     });
 
     const employee = employeeDoc.toObject();

@@ -6,18 +6,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
+import {Select,SelectContent,SelectItem,SelectTrigger,SelectValue} from "@/components/ui/select"
+import {Popover,PopoverContent,PopoverTrigger} from "@/components/ui/popover"
 import { Calendar } from "@/components/ui/calendar"
 import { cn } from "@/lib/utils"
 import { FaUserTie} from "react-icons/fa6"
@@ -39,20 +29,61 @@ export default function AddEmployeePage() {
   const [role, setRole] = useState("");
   const [password, setPassword] = useState("");
 
+  // Validation state
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
+  const [isFormValid, setIsFormValid] = useState(false);
+
+  // Validate the form whenever a value changes
+  useEffect(() => {
+    const newErrors: { [key: string]: string } = {}
+
+    if (!firstName.trim()) newErrors.firstName = "First Name is required"
+    if (!lastName.trim()) newErrors.lastName = "Last Name is required"
+    if (!employeeId.trim()) newErrors.employeeId = "Employee ID is required"
+    if (!email.trim()) newErrors.email = "Email is required"
+    else if (!/^\S+@\S+\.\S+$/.test(email)) newErrors.email = "Invalid email format"
+    if (!password) newErrors.password = "Password is required"
+    if (!dob) newErrors.dob = "Date of Birth is required"
+    if (!gender) newErrors.gender = "Gender is required"
+    if (!maritalStatus) newErrors.maritalStatus = "Marital Status is required"
+    if (!designation.trim()) newErrors.designation = "Designation is required"
+    if (!department) newErrors.department = "Department is required"
+    if (!salary || isNaN(Number(salary))) newErrors.salary = "Salary is required"
+    if (!role) newErrors.role = "Role is required"
+
+    setErrors(newErrors)
+    setIsFormValid(Object.keys(newErrors).length === 0)
+  }, [
+    firstName,
+    lastName,
+    employeeId,
+    email,
+    password,
+    dob,
+    gender,
+    maritalStatus,
+    designation,
+    department,
+    salary,
+    role,
+  ])
+
   const handleSubmit = async()=>{
     try{
-         const res = await api.post("/employees", {
-         name: `${firstName} ${lastName}`,
-         email,
-         password,
-         role,
-         gender,
-         maritalStatus,
-         department,
-         salary,
-         designation,
-         dob
-        });
+const res = await api.post("/employees", {
+    name: `${firstName} ${lastName}`,
+    email,
+    password,
+    role,
+    employeeId,
+    gender,
+    maritalStatus,
+    department,
+    salary: Number(salary), 
+    designation,
+    dob: dob ? dob.toISOString() : null, 
+    profileImage: imgPreview || null
+    });
 
     alert("Employee created successfully");
 
@@ -62,65 +93,7 @@ export default function AddEmployeePage() {
         alert(error.response?.data?.message);
     }
 }
-//  const handleSubmit = async () => {
-//   try {
-//     // Prepare FormData to handle file upload
-//     const form = new FormData();
-//     form.append("name", `${firstName} ${lastName}`);
-//     form.append("email", email);
-//     form.append("password", password);
-//     form.append("role", role);
-//     form.append("gender", gender);
-//     form.append("maritalStatus", maritalStatus);
-//     form.append("department", department);
-//     form.append("salary", salary);
-//     form.append("designation", designation);
 
-//     if (dob) {
-//       form.append("dob", dob.toISOString()); // Convert Date to string
-//     }
-
-//     if (employeeId) {
-//       form.append("employeeId", employeeId);
-//     }
-
-//     if (imgPreview) {
-//       const fileInput = document.querySelector<HTMLInputElement>('input[type="file"]');
-//       if (fileInput?.files?.[0]) {
-//         form.append("profileImage", fileInput.files[0]);
-//       }
-//     }
-
-//     // Send request using axios from lib/axios.ts
-//     const res = await api.post("/employees", form, {
-//       headers: {
-//         "Content-Type": "multipart/form-data",
-//       },
-//     });
-
-//     alert("Employee created successfully!");
-//     console.log(res.data);
-
-//     // Optional: reset form after submit
-//     setFirstName("");
-//     setLastName("");
-//     setEmail("");
-//     setPassword("");
-//     setRole("");
-//     setGender("");
-//     setMaritalStatus("");
-//     setDepartment("");
-//     setSalary("");
-//     setDesignation("");
-//     setDob(undefined);
-//     setEmployeeId("");
-//     setImagePreview(null);
-
-//   } catch (error: any) {
-//     console.error(error);
-//     alert(error.response?.data?.message || "Something went wrong!");
-//   }
-// };
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   const file = e.target.files?.[0];
   if (file) {
@@ -149,8 +122,11 @@ export default function AddEmployeePage() {
                     <Input 
                     placeholder="John"
                     value={firstName}
-                    onChange={(e)=>setFirstName(e.target.value)} 
+                    onChange={(e)=>setFirstName(e.target.value)}
                     />
+                    <p className="text-red-500 text-sm min-h-[1.25rem]">
+                    {errors.firstName ? errors.firstName : <span className="invisible">placeholder</span>}
+                    </p>
                 </div>
 
                 <div>
@@ -158,7 +134,9 @@ export default function AddEmployeePage() {
                     <Input 
                     placeholder="Doe"
                     value={lastName}
-                    onChange={(e)=>setLastName(e.target.value)} />
+                    onChange={(e)=>setLastName(e.target.value)}
+                    />
+                    {errors.lastName && <p className="text-red-500 text-sm">{errors.lastName}</p>}
                 </div>
 
                 <div>
@@ -187,6 +165,7 @@ export default function AddEmployeePage() {
                     />
                 </PopoverContent>
                 </Popover>
+                {errors.dob && <p className="text-red-500 text-sm">{errors.dob}</p>}
                 </div>
                 
                 <div>
@@ -194,8 +173,9 @@ export default function AddEmployeePage() {
                     <Input 
                     placeholder="EMP001"
                     value={employeeId}
-                    onChange={(e)=>setEmployeeId(e.target.value)} 
+                    onChange={(e)=>setEmployeeId(e.target.value)}
                     />
+                    {errors.employeeId && <p className="text-red-500 text-sm">{errors.employeeId}</p>}
                 </div>
 
                 <div>
@@ -210,6 +190,7 @@ export default function AddEmployeePage() {
                     <SelectItem value="other">Other</SelectItem>
                     </SelectContent>
                 </Select>
+                {errors.gender && <p className="text-red-500 text-sm">{errors.gender}</p>}
                 </div>
                 
                 <div>
@@ -225,6 +206,7 @@ export default function AddEmployeePage() {
                         <SelectItem value="married">Married</SelectItem>
                         </SelectContent>
                     </Select>
+                    {errors.gender && <p className="text-red-500 text-sm">{errors.gender}</p>}
                 </div>
                 
                 <div className="col-span-2">
@@ -235,6 +217,7 @@ export default function AddEmployeePage() {
                 value={email}
                 onChange={(e)=>setEmail(e.target.value)}
                 />
+                {errors.email && <p className="text-red-500 text-sm">{errors.email}</p>}
                 </div>
             </div>
             
@@ -271,6 +254,7 @@ export default function AddEmployeePage() {
               value={designation}
               onChange={(e)=>setDesignation(e.target.value)}
               />
+              {errors.designation && <p className="text-red-500 text-sm">{errors.designation}</p>}
             </div>
 
             <div>
@@ -287,6 +271,7 @@ export default function AddEmployeePage() {
                   <SelectItem value="finance">Finance</SelectItem>
                 </SelectContent>
               </Select>
+              {errors.department && <p className="text-red-500 text-sm">{errors.department}</p>}
             </div>
           
             <div>
@@ -295,7 +280,9 @@ export default function AddEmployeePage() {
                 type="number" 
                 placeholder="$5000" 
                 value={salary}
-                onChange={(e)=>setSalary(e.target.value)}/>
+                onChange={(e)=>setSalary(e.target.value)}
+                />
+                {errors.salary && <p className="text-red-500 text-sm">{errors.salary}</p>}
             </div>
           
             <div>
@@ -312,6 +299,7 @@ export default function AddEmployeePage() {
                 <SelectItem value="employee">Employee</SelectItem>
               </SelectContent>
             </Select>
+            {errors.role && <p className="text-red-500 text-sm">{errors.role}</p>}
            </div>
           
         </div>
@@ -322,14 +310,21 @@ export default function AddEmployeePage() {
             type="password" 
             placeholder="Enter password" 
             value={password}
-            onChange={(e)=>setPassword(e.target.value)}/>
+            onChange={(e)=>setPassword(e.target.value)}
+            />
+            {errors.password && <p className="text-red-500 text-sm">{errors.password}</p>}
         </div>
 
         
         {/* Submit */}
         <div className="flex justify-end gap-3 pt-4">
             <Button variant="outline">Cancel</Button>
-            <Button onClick={handleSubmit}>Add Employee</Button>
+            <Button 
+            onClick={handleSubmit}
+            disabled={!isFormValid}
+            >
+                Add Employee
+            </Button>
         </div>
 
         </CardContent>

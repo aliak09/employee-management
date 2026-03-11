@@ -1,46 +1,16 @@
 "use client"
 import React, { useEffect, useState } from 'react'
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import {Table,TableBody,TableCaption,TableCell,TableFooter,TableHead,TableHeader,TableRow} from "@/components/ui/table"
 import { MoreHorizontalIcon, Plus } from 'lucide-react'
 import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import {DropdownMenu,DropdownMenuContent,DropdownMenuItem,DropdownMenuSeparator,DropdownMenuTrigger} from "@/components/ui/dropdown-menu"
 import { Field, FieldLabel } from "@/components/ui/field"
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination"
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import {Pagination,PaginationContent,PaginationItem,PaginationNext,PaginationPrevious} from "@/components/ui/pagination"
+import {Select,SelectContent,SelectGroup,SelectItem,SelectTrigger,SelectValue} from "@/components/ui/select"
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import Link from "next/link"
 import api from '@/lib/axios'
-import axios from 'axios'
-
 
 export default function AdminEmployee() {
 
@@ -52,7 +22,7 @@ export default function AdminEmployee() {
 
   const fetchEmployees = async ()=>{
     try{
-      
+
       const res = await api.get("/employees")
       
       setEmployees(res.data.employees);
@@ -106,15 +76,17 @@ export default function AdminEmployee() {
               <TableCell>{index +1}</TableCell>
               <TableCell>{emp.name}</TableCell>
               <TableCell>{emp.role}</TableCell>
-              <TableCell>$700</TableCell>
-              <TableCell>IT Dept</TableCell>
+              <TableCell>{emp.salary}</TableCell>
+              <TableCell>{emp.department}</TableCell>
               <TableCell className='text-right'>
                 <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                     <Button variant="ghost" size="icon" className="size-8"><MoreHorizontalIcon /><span className="sr-only">Open menu</span></Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
+                    <Link href={`/admin/employee/view/${emp._id}`}>
                     <DropdownMenuItem>View</DropdownMenuItem>
+                    </Link>
                     <DropdownMenuItem>Edit</DropdownMenuItem>
                     <DropdownMenuItem>Leaves</DropdownMenuItem>
                     <DropdownMenuSeparator />
