@@ -22,8 +22,12 @@ export async function GET(req:NextRequest) {
     const limit = parseInt(searchParams.get("limit") || "5");
     
     const skip = (page - 1) * limit;
+
+    const search = searchParams.get("search") || "";
     
-    const employees = await Employee.find()
+    const employees = await Employee.find({
+        name: {$regex: search, $options: "i"}
+    })
     .sort({createdAt:-1})
     .skip(skip)
     .limit(limit)

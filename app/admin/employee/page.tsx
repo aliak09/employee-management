@@ -18,11 +18,21 @@ export default function AdminEmployee() {
   const [page, setPage]=useState<number>(1);
   const [totalPages, setTotalPages]=useState<number>(1);
   const [rowsPerPage, setRowsPerPage]= useState<number>(5);
+  const [search, setSearch] =useState<string>("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  useEffect(() => {
+  const timer = setTimeout(() => {
+    setDebouncedSearch(search);
+  }, 500);
+
+  return () => clearTimeout(timer);
+}, [search]);
 
   const fetchEmployees = async (pageNumber:number, limit = rowsPerPage)=>{
     try{
 
-      const res = await api.get(`/employees?page=${pageNumber}&limit=${limit}`);
+      const res = await api.get(`/employees?page=${pageNumber}&limit=${limit}&search=${debouncedSearch}`);
       
       setEmployees(res.data.employees);
       setPage(Number(res.data.pagination.page) || 1);
@@ -37,7 +47,7 @@ export default function AdminEmployee() {
   
   useEffect(()=>{
     fetchEmployees(page, rowsPerPage);
-  },[page, rowsPerPage]);
+  },[page, rowsPerPage, debouncedSearch]);
 
   const handleDelete= async(id: string)=>{
     const confirmDelete = confirm("Are you sure you want to delete this employee?");
@@ -60,8 +70,12 @@ export default function AdminEmployee() {
         <div className="flex items-center justify-between">
         
         <Input
-          placeholder="Search employee..."
+          placeholder="Search Employee"
           className="max-w-sm shadow-none"
+          value={search}
+          onChange={(e)=>{
+          setSearch(e.target.value)
+          setPage(1)}}
         />
         <Link href="/admin/employee/add">
           <Button variant="outline" className='shadow-none'>
@@ -87,7 +101,9 @@ export default function AdminEmployee() {
           </TableRow>
           </TableHeader>
           <TableBody>
-            {employees.map((emp, index)=>
+            
+            {employees.length> 0 ? (
+            employees.map((emp, index)=>(
             <TableRow key={emp._id}>
               <TableCell>{index +1}</TableCell>
               <TableCell>{emp.name}</TableCell>
@@ -115,7 +131,16 @@ export default function AdminEmployee() {
                 </DropdownMenu>
               </TableCell>
             </TableRow>
-            )}
+            ))  
+          ):(
+          
+          <TableRow>
+            <TableCell colSpan={6} className="hover:bg-white text-center py-6 text-gray-500">
+              No record found
+            </TableCell>
+          </TableRow>
+          
+        )}
           </TableBody>
         </Table>
         </CardContent>
