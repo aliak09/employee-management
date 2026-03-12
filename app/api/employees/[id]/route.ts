@@ -50,7 +50,19 @@ export async function PUT(
         
         try{
                 //check to update only specific fields
-                const allowedFields =["name", "email", "password"];
+                const allowedFields =[
+                    "name", 
+                    "email", 
+                    "password", 
+                    "profileImage", 
+                    "employeeId",
+                    "dob",
+                    "gender",
+                    "maritalStatus",
+                    "designation",
+                    "department",
+                    "salary"
+                ];
                 const updates:any= {};
                 
                 allowedFields.forEach((field)=>{

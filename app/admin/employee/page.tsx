@@ -15,17 +15,18 @@ import api from '@/lib/axios'
 export default function AdminEmployee() {
 
   const [employees, setEmployees]=useState<any[]>([]);
+  const [page, setPage]=useState<number>(1);
+  const [totalPages, setTotalPages]=useState<number>(1);
+  const [rowsPerPage, setRowsPerPage]= useState<number>(5);
 
-  useEffect(()=>{
-    fetchEmployees();
-  },[]);
-
-  const fetchEmployees = async ()=>{
+  const fetchEmployees = async (pageNumber:number, limit = rowsPerPage)=>{
     try{
 
-      const res = await api.get("/employees")
+      const res = await api.get(`/employees?page=${pageNumber}&limit=${limit}`);
       
       setEmployees(res.data.employees);
+      setPage(Number(res.data.pagination.page) || 1);
+      setTotalPages(Number(res.data.pagination.totalPages) || 1);
 
     }catch(error){
 
@@ -33,7 +34,22 @@ export default function AdminEmployee() {
 
     }
   };
+  
+  useEffect(()=>{
+    fetchEmployees(page, rowsPerPage);
+  },[page, rowsPerPage]);
 
+  const handleDelete= async(id: string)=>{
+    const confirmDelete = confirm("Are you sure you want to delete this employee?");
+    if(!confirmDelete) return;
+    try{
+      await api.delete(`/employees/${id}`);
+      alert("Employee deleted successfully");
+      fetchEmployees(page);
+    }catch(error:any){
+      alert(error.response?.data?.message);
+    }
+  }
   return (
     <div>
     <div className='flex justify-center items-center mb-4 font-semibold'>
@@ -85,12 +101,14 @@ export default function AdminEmployee() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <Link href={`/admin/employee/view/${emp._id}`}>
-                    <DropdownMenuItem>View</DropdownMenuItem>
+                      <DropdownMenuItem>View</DropdownMenuItem>
                     </Link>
-                    <DropdownMenuItem>Edit</DropdownMenuItem>
+                    <Link href={`/admin/employee/edit/${emp._id}`}>
+                      <DropdownMenuItem>Edit</DropdownMenuItem>
+                    </Link>
                     <DropdownMenuItem>Leaves</DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem variant="destructive">
+                    <DropdownMenuItem variant="destructive" onClick={()=>handleDelete(emp._id)}>
                       Delete
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -106,16 +124,22 @@ export default function AdminEmployee() {
           <div className="flex items-center justify-between gap-4">
           <Field orientation="horizontal" className="w-fit">
             <FieldLabel htmlFor="select-rows-per-page">Rows per page</FieldLabel>
-            <Select defaultValue="25">
+            <Select 
+            defaultValue="5"
+            onValueChange={(value)=>{
+              setRowsPerPage(Number(value));
+              setPage(1);
+            }}
+            >
               <SelectTrigger className="w-20" id="select-rows-per-page">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent align="start">
                 <SelectGroup>
+                  <SelectItem value="5">5</SelectItem>
                   <SelectItem value="10">10</SelectItem>
-                  <SelectItem value="25">25</SelectItem>
-                  <SelectItem value="50">50</SelectItem>
-                  <SelectItem value="100">100</SelectItem>
+                  <SelectItem value="15">15</SelectItem>
+                  <SelectItem value="20">20</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -123,17 +147,34 @@ export default function AdminEmployee() {
           <Pagination className="mx-0 w-auto">
             <PaginationContent>
               <PaginationItem>
-                <PaginationPrevious href="#" />
+                
+                <PaginationPrevious
+                href="#" 
+                onClick={(e) => {
+                  e.preventDefault();
+                  if (page > 1) setPage(page - 1);
+                }}
+                className={page === 1 ? "pointer-events-none opacity-50" : ""}
+                />
+
               </PaginationItem>
               <PaginationItem>
-                <PaginationNext href="#" />
+                
+                <PaginationNext 
+                        href="#"
+                        onClick={() => {
+                          if (page < totalPages) setPage(page + 1);
+                        }}
+                        className={page === totalPages ? "pointer-events-none opacity-50" : ""}
+                />
+
               </PaginationItem>
             </PaginationContent>
           </Pagination>
           </div>
       </CardFooter>
     </Card>
+  </div>
     
-    </div>
   )
 }

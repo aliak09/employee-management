@@ -15,9 +15,29 @@ export async function GET(req:NextRequest) {
         );
     }
     
-    const employees = await Employee.find().select("-password");
+    const {searchParams} = new URL(req.url);
+    
+    const page = parseInt(searchParams.get("page") || "1");
+    
+    const limit = parseInt(searchParams.get("limit") || "5");
+    
+    const skip = (page - 1) * limit;
+    
+    const employees = await Employee.find()
+    .sort({createdAt:-1})
+    .skip(skip)
+    .limit(limit)
+    .select("-password");
+    
+    const total = await Employee.countDocuments();
+
     return NextResponse.json({
-        employees
+        employees,
+        pagination:{
+            total,
+            page,
+            totalPages:Math.ceil(total/limit)
+        }
     });
 }
 

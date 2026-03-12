@@ -1,15 +1,16 @@
 "use client"
-
 import { useEffect, useState } from "react"
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import api from "@/lib/axios"
 import { FaUserTie } from "react-icons/fa6"
 import { format } from "date-fns"
-
+import { useParams } from "next/navigation"
 export default function EmployeeProfilePage() {
 
   const [employee, setEmployee] = useState<any>(null)
+
+  const {id} = useParams();
 
   useEffect(() => {
     fetchEmployee()
@@ -17,7 +18,7 @@ export default function EmployeeProfilePage() {
 
   const fetchEmployee = async () => {
     try {
-      const res = await api.get("/employees/69b1f0822ba0a33c934be91c") // replace with dynamic id
+      const res = await api.get(`/employees/${id}`) // replace with dynamic id
       setEmployee(res.data.employee)
     } catch (error) {
       console.log("Failed to fetch employee")
@@ -82,6 +83,27 @@ export default function EmployeeProfilePage() {
                 <Label>Designation</Label>
                 <p className="text-sm mt-1">{employee.designation}</p>
               </div>
+
+            <div>
+              <Label>Department</Label>
+              <p className="text-sm mt-1">{employee.department}</p>
+            </div>
+
+            <div>
+              <Label>Salary</Label>
+              <p className="text-sm mt-1">${employee.salary}</p>
+            </div>
+
+            <div>
+              <Label>Role</Label>
+              <p className="text-sm mt-1">{employee.role}</p>
+            </div>
+
+            <div>
+              <Label>Leaves Availed</Label>
+              <p className="text-sm mt-1">12</p>
+            </div>
+
         </div>
 
             {/* Profile Image */}
@@ -107,20 +129,7 @@ export default function EmployeeProfilePage() {
 
 
 
-            <div>
-              <Label>Department</Label>
-              <p className="text-sm mt-1">{employee.department}</p>
-            </div>
 
-            <div>
-              <Label>Salary</Label>
-              <p className="text-sm mt-1">${employee.salary}</p>
-            </div>
-
-            <div>
-              <Label>Role</Label>
-              <p className="text-sm mt-1">{employee.role}</p>
-            </div>
 
           </div>
 
