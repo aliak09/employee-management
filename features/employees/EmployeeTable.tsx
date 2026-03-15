@@ -1,5 +1,5 @@
 "use client"
-import DataTable from '@/components/data-table/DataTable'
+import DataTable from '@/components/table/DataTable'
 import { useEffect, useState } from 'react'
 import { MoreHorizontalIcon } from 'lucide-react'
 import { Button } from "@/components/ui/button"
@@ -7,8 +7,9 @@ import {DropdownMenu,DropdownMenuContent,DropdownMenuItem,DropdownMenuSeparator,
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import Link from "next/link"
 import api from '@/lib/axios'
-import EmployeeToolbar from './EmployeeToolbar'
-import EmployeePagination from './EmployeePagination'
+import TableToolbar from '@/components/table/TableToolbar'
+import TablePagination from '@/components/table/TablePagination'
+
 
 export default function EmployeeTable() {
     
@@ -132,10 +133,12 @@ export default function EmployeeTable() {
         <Card className='shadow-none p-8'>
         
         <CardHeader className='p-0'>
-                <EmployeeToolbar
+                <TableToolbar
                 search={search}
                 setSearch={setSearch}
                 setPage={setPage}
+                addLink='/admin/employee/add'
+                addLabel='Add Employee'
                 />
         </CardHeader>
 
@@ -146,7 +149,7 @@ export default function EmployeeTable() {
         </Card>
         
         <CardFooter className='flex justify-end p-0'>
-            <EmployeePagination
+            <TablePagination
             page={page}
             totalPages={totalPages}
             setPage={setPage}

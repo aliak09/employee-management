@@ -3,17 +3,21 @@ import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Plus } from "lucide-react"
 
-interface EmployeeToolbarProps{
+interface TableToolbarProps{
     search:string
     setSearch: (value:string) => void
     setPage: (value: number) => void
+    addLink: string
+    addLabel: string
 }
 
-export default function EmployeeToolbar({
+export default function TableToolbar({
     search,
     setSearch,
-    setPage
-}:EmployeeToolbarProps) {
+    setPage,
+    addLink,
+    addLabel
+}:TableToolbarProps) {
   return (
     <div className="flex items-center justify-between">  
         
@@ -26,11 +30,11 @@ export default function EmployeeToolbar({
           setPage(1)}}
         />
 
-        <Link href="/admin/employee/add">
+        <Link href={addLink}>
           
           <Button variant="outline" className='shadow-none'>
             <Plus className="mr-2 h-4 w-4" />
-            Add Employee
+            {addLabel}
           </Button>
         
         </Link>

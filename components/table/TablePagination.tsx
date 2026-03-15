@@ -2,14 +2,19 @@ import { Field, FieldLabel } from "@/components/ui/field";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectGroup,SelectItem } from "@/components/ui/select";
 import { Pagination, PaginationContent,PaginationItem, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
 
-interface EmployeePaginationProp{
+interface TablePaginationProp{
     page:number
     totalPages:number
     setPage:(value:number) => void
     setRowsPerPage:(value:number) =>void
 }
 
-export default function EmployeePagination({page,totalPages,setPage, setRowsPerPage}:EmployeePaginationProp) {
+export default function TablePagination({
+    page,
+    totalPages,
+    setPage,
+    setRowsPerPage
+}:TablePaginationProp) {
   return (
     <div className="flex items-center justify-between gap-4">
         <Field orientation="horizontal" className="w-fit">
