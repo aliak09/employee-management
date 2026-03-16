@@ -1,7 +1,7 @@
-import React from 'react'
+import DepartmentTable from "@/features/departments/DepartmentTable"
 
 export default function Departments() {
   return (
-    <div>Departments</div>
+    <DepartmentTable/>
   )
 }
