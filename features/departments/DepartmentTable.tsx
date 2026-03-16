@@ -3,7 +3,7 @@ import DataTable from '@/components/table/DataTable'
 import TableToolbar from '@/components/table/TableToolbar'
 import TablePagination from '@/components/table/TablePagination'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
-import { DropdownMenu, DropdownMenuTrigger,DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator } from '@/components/ui/dropdown-menu'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { MoreHorizontalIcon } from 'lucide-react'
@@ -70,6 +70,7 @@ export default function DepartmentTable() {
       )
     }
     ]
+
   return (
     <div>
       <div className='flex justify-center items-center mb-4 font-semibold'>

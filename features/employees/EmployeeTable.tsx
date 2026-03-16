@@ -9,25 +9,27 @@ import Link from "next/link"
 import api from '@/lib/axios'
 import TableToolbar from '@/components/table/TableToolbar'
 import TablePagination from '@/components/table/TablePagination'
+import useDebounce from '@/hooks/useDebounce'
+import useTable from '@/hooks/useTable'
 
 
 export default function EmployeeTable() {
     
     const [employees, setEmployees]=useState<any[]>([]);
-    const [page, setPage]=useState<number>(1);
     const [totalPages, setTotalPages]=useState<number>(1);
-    const [rowsPerPage, setRowsPerPage]= useState<number>(5);
-    const [search, setSearch] =useState<string>("");
-    const [debouncedSearch, setDebouncedSearch] = useState("");
+    
+    const {page, setPage, rowsPerPage, setRowsPerPage, search, setSearch} = useTable();
+
+    const debouncedSearch = useDebounce(search, 500);
     
     const columns = [
-    {
-      header: "Sr No",
-      accessor: "serial",
-      cell: (_row: any, index?: number) => (page - 1) * rowsPerPage + ((index ?? 0) + 1)
-    },
-    {
-      header: "Name",
+      {
+        header: "Sr No",
+        accessor: "serial",
+        cell: (_row: any, index?: number) => (page - 1) * rowsPerPage + ((index ?? 0) + 1)
+      },
+      {
+        header: "Name",
       accessor: "name"
     },
     {
@@ -78,17 +80,8 @@ export default function EmployeeTable() {
         </DropdownMenu>
       )
     }
-    ]
+  ]
     
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setDebouncedSearch(search);
-        }, 500);
-        
-        return () => clearTimeout(timer);
-    }, [search]);
-    
-  
     const fetchEmployees = async (pageNumber:number, limit = rowsPerPage)=>{
     try{
 
