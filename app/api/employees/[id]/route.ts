@@ -18,7 +18,9 @@ export async function GET(
         
         const { id } = await context.params;
 
-        const employee = await Employee.findById(id).select("-password");
+        const employee = await Employee.findById(id)
+        .select("-password")
+        .populate("department","name");
 
         if(!employee){
             return NextResponse.json({message:"Employee not found"}, {status:404});

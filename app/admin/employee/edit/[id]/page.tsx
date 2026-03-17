@@ -35,19 +35,34 @@ export default function EditEmployeePage() {
 
 const { id } = useParams()
 
-const [dob, setDob] = useState<Date | undefined>()
-const [imgPreview, setImagePreview] = useState<string | null>(null)
+const [dob, setDob] = useState<Date | undefined>();
+const [imgPreview, setImagePreview] = useState<string | null>(null);
 
-const [firstName,setFirstName] = useState("")
-const [lastName,setLastName] = useState("")
-const [email,setEmail] = useState("")
-const [employeeId,setEmployeeId] = useState("")
-const [gender,setGender] = useState("")
-const [maritalStatus,setMaritalStatus] = useState("")
-const [designation,setDesignation] = useState("")
-const [department,setDepartment] = useState("")
-const [salary,setSalary] = useState("")
-const [role,setRole] = useState("")
+const [firstName,setFirstName] = useState("");
+const [lastName,setLastName] = useState("");
+const [email,setEmail] = useState("");
+const [employeeId,setEmployeeId] = useState("");
+const [gender,setGender] = useState("");
+const [maritalStatus,setMaritalStatus] = useState("");
+const [designation,setDesignation] = useState("");
+const [department,setDepartment] = useState("");
+const [salary,setSalary] = useState("");
+const [role,setRole] = useState("");
+const [departments, setDepartments] = useState<any[]>([]);
+
+
+useEffect(()=>{
+    const fetchDepartments = async()=>{
+      try{
+      const res = await api.get("/department");
+      setDepartments(res.data.departments);
+      }catch(error){
+        console.error("Failed to fetch departments", error);
+      }
+    };
+
+    fetchDepartments();
+  },[])
 
 /* ---------------- FETCH EMPLOYEE ---------------- */
 
@@ -71,7 +86,7 @@ setEmployeeId(emp.employeeId || "")
 setGender(emp.gender || "")
 setMaritalStatus(emp.maritalStatus || "")
 setDesignation(emp.designation || "")
-setDepartment(emp.department || "")
+setDepartment(emp.department?._id || "")
 setSalary(emp.salary?.toString() || "")
 setRole(emp.role || "")
 
@@ -342,21 +357,21 @@ onChange={(e)=>setDesignation(e.target.value)}
 
 <Label>Department</Label>
 
-<Select value={department} onValueChange={setDepartment}>
+<Select value={department} onValueChange={(value)=>setDepartment(value)}>
 
-<SelectTrigger>
+<SelectTrigger className="w-full">
 
 <SelectValue placeholder="Select department"/>
 
 </SelectTrigger>
 
-<SelectContent>
-
-<SelectItem value="it">IT</SelectItem>
-<SelectItem value="hr">HR</SelectItem>
-<SelectItem value="finance">Finance</SelectItem>
-
-</SelectContent>
+                <SelectContent>
+                  {departments.map((dep)=>(
+                    <SelectItem key={dep._id} value={dep._id}>
+                     {dep.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
 
 </Select>
 
@@ -380,7 +395,7 @@ onChange={(e)=>setSalary(e.target.value)}
 
 <Select value={role} onValueChange={setRole}>
 
-<SelectTrigger>
+<SelectTrigger className="w-full">
 
 <SelectValue placeholder="Select role"/>
 

@@ -42,7 +42,8 @@ export default function EmployeeTable() {
     },
     {
       header: "Department",
-      accessor: "department"
+      accessor: "department",
+      cell: (row: any) => row.department?.name || "-"
     },
     {
       header: "Actions",

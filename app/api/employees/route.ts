@@ -31,7 +31,9 @@ export async function GET(req:NextRequest) {
     .sort({createdAt:-1})
     .skip(skip)
     .limit(limit)
-    .select("-password");
+    .select("-password")
+    .populate("department","name");
+
     
     const total = await Employee.countDocuments();
 

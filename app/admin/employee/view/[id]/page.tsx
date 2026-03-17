@@ -86,7 +86,7 @@ export default function EmployeeProfilePage() {
 
             <div>
               <Label>Department</Label>
-              <p className="text-sm mt-1">{employee.department}</p>
+              <p className="text-sm mt-1">{employee.department?.name || "-"}</p>
             </div>
 
             <div>

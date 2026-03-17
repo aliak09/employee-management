@@ -11,7 +11,11 @@ const employeeSchema=new mongoose.Schema({
     gender: { type: String, enum: ['male', 'female', 'other'] },
     maritalStatus: { type: String, enum: ['single', 'married'] },
     designation: { type: String },
-    department: { type: String },
+    department: { 
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Department",
+        required:true 
+    },
     salary: { type: Number }
 }, {timestamps:true});
 

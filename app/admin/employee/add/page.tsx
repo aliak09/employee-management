@@ -25,9 +25,24 @@ export default function AddEmployeePage() {
   const [maritalStatus, setMaritalStatus] = useState("");
   const [designation, setDesignation] = useState("");
   const [department, setDepartment] = useState("");
+  const [departments, setDepartments] = useState<any[]>([]);
   const [salary, setSalary] = useState("");
   const [role, setRole] = useState("");
   const [password, setPassword] = useState("");
+
+  useEffect(()=>{
+    const fetchDepartments = async()=>{
+      try{
+      const res = await api.get("/department");
+      setDepartments(res.data.departments);
+      }catch(error){
+        console.error("Failed to fetch departments", error);
+      }
+    };
+
+    fetchDepartments();
+  },[])
+  
 
   // Validation state
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
@@ -260,15 +275,17 @@ const res = await api.post("/employees", {
             <div>
               <Label>Department</Label>
 
-              <Select onValueChange={setDepartment}>
+              <Select onValueChange={(value)=>setDepartment(value)}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select department" />
                 </SelectTrigger>
 
                 <SelectContent>
-                  <SelectItem value="it">IT</SelectItem>
-                  <SelectItem value="hr">HR</SelectItem>
-                  <SelectItem value="finance">Finance</SelectItem>
+                  {departments.map((dep)=>(
+                    <SelectItem key={dep._id} value={dep._id}>
+                     {dep.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               {errors.department && <p className="text-red-500 text-sm">{errors.department}</p>}

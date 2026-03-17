@@ -49,7 +49,7 @@ const navBtns= [
     {
         name: "Settings",
         icon: <Settings/>,
-        path: "/admin/salary"
+        path: "/admin/settings"
     }
 ];
 
