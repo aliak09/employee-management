@@ -16,6 +16,7 @@ import api from "@/lib/axios"
 export default function AddEmployeePage() {
 
   const [dob, setDob] = useState<Date | undefined>();
+  const[imgFile, setImgFile] = useState<File| null>(null);
   const [imgPreview, setImagePreview]=useState<string | null>(null);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -83,9 +84,34 @@ export default function AddEmployeePage() {
     role,
   ])
 
+  const uploadImage = async (file: File)=>{
+
+  const formData = new FormData();
+  formData.append("image", file);
+  
+    const res = await fetch("/api/upload", {
+    method: "POST",
+    body: formData,
+  });
+
+  const data = await res.json();
+  if (!data.url) throw new Error("Upload failed");
+  return data.url;
+
+  }
+
   const handleSubmit = async()=>{
     try{
-const res = await api.post("/employees", {
+      
+    let imageUrl: string|null = null;
+    
+    if(imgFile){
+      
+      imageUrl= await uploadImage(imgFile);
+    
+    }
+
+    const res = await api.post("/employees", {
     name: `${firstName} ${lastName}`,
     email,
     password,
@@ -97,7 +123,7 @@ const res = await api.post("/employees", {
     salary: Number(salary), 
     designation,
     dob: dob ? dob.toISOString() : null, 
-    profileImage: imgPreview || null
+    profileImage: imageUrl
     });
 
     alert("Employee created successfully");
@@ -112,6 +138,7 @@ const res = await api.post("/employees", {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
   const file = e.target.files?.[0];
   if (file) {
+    setImgFile(file);
     const previewUrl = URL.createObjectURL(file);
     setImagePreview(previewUrl);
   }

@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import Employee from "@/models/Employee";
 import { authenticate } from "@/lib/auth";
+import cloudinary from "@/lib/cloudinary";
+
 import bcrypt from "bcryptjs";
 
 export async function GET(req:NextRequest) {
@@ -99,7 +101,7 @@ export async function POST(req:NextRequest) {
         designation,
         department,
         salary,
-        profileImage
+        profileImage: profileImage || null
     });
 
     const employee = employeeDoc.toObject();
